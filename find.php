@@ -5,69 +5,44 @@
 	</style>
 
   <head>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-  </head>
-  <body>
-  	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+ </head>
+  
+ <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
-
-	<?php include_once("template_navbar.php"); ?>
-
-<br/>
-<br/>
-<div class="container">
-	<div class="jumbotron">
-		<h1>Choose your Amenities!</h1>
-		<p>Check all that you are interested in!</p>
-		<div class="btn-group" data-toggle="buttons">
-		  <label class="btn btn-primary">
-		    <input type="checkbox"> Jungle Juice
-		  </label>
-		  <label class="btn btn-primary">
-		    <input type="checkbox"> Music
-		  </label>
-		  <label class="btn btn-primary">
-		    <input type="checkbox"> Backyard
-		  </label>
-		  <label class="btn btn-primary">
-		    <input type="checkbox"> DJ
-		  </label>
-		  <label class="btn btn-primary">
-		    <input type="checkbox"> High Capacity
-		  </label>
-		  <label class="btn btn-primary">
-		    <input type="checkbox"> Kickback
-		  </label>
-		</div>
-		<br/>
-		<br/>
-		<button type="button" id="loading-example-btn" data-loading-text="Loading..." class="btn btn-primary">
-		  Search
-		</button>
+	
+<?php 	include_once("template_navbar.php");
+			include_once("php_includes/db_conx.php"); ?>
+	</br>
+	<div class = 'container'>
+		<div class='jumbotron'>
+		<h1>Local Parties in Your Area!</h1>
+		<p>Below is a list of local of parties, or click the button below to advertise a party.</p>
+		<p><a class='btn btn-success btn-lg' href='advertise.php' role='button'>Advertise A Party</a></p>
 	</div>
-</div>
-	<?php
-		include_once("php_includes/db_conx");
-		
-		$sql = "SELECT * FROM parties";
-		$result = $db_conx->query($sql);
-		
-		if ($result->num_rows > 0){
-			while($row = $result->fetch_assoc()){
-				echo "Event Title: " .$row["title"]. "</br>Address: " .$row["address"]. "</br>".$row["city"]. ", " .$row["state"]. " " .$row["zipcode"]. "</br>"; 
-			}
+
+<?php	
+	$query= "SELECT * FROM parties ORDER BY datecreated DESC";
+	
+	if ($result = mysqli_query($db_conx, $query)){
+		while($row = mysqli_fetch_assoc($result)){
+			//change format of date
+			$myDateTime = DateTime::createFromFormat('Y-m-d G:i:s', $row["start"]);
+			$newDateString = $myDateTime->format('l, F jS, Y g:i a');
+			//display results in jumbotrons
+			echo
+			"<div class='jumbotron'>
+				<label>" .$row["title"]. "</label></br>Address: " .$row["address"]. "</br>".$row["city"]. ", " .$row["state"]. " " .$row["zipcode"]. "</br>Start Time: ".$newDateString."</div>"; 
 		}
+		//free result set
+		mysqli_free_result($result);
+	}
+	//close connection
+	mysqli_close($db_conx);
+	//close container div 
+	echo "</div>";
 	?>
-
-
-  </body>
+</body>
 </html>

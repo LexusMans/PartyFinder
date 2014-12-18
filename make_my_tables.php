@@ -47,6 +47,7 @@ $tbl_parties = "CREATE TABLE IF NOT EXISTS parties (
                 city VARCHAR(30) NOT NULL,
                 state VARCHAR(20) NOT NULL,
                 zipcode VARCHAR(15) NOT NULL,
+				start DATETIME NOT NULL,
 				datecreated DATETIME NOT NULL,
 				datemodified DATETIME NOT NULL,
                 PRIMARY KEY (id)

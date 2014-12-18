@@ -9,23 +9,23 @@ if(isset($_POST["a"])){
 	$c = preg_replace('#[^a-z ]#i', '', $_POST['c']);
 	$s = preg_replace('#[^a-z ]#i', '', $_POST['s']);
 	$z = preg_replace('#[^0-9]#', '', $_POST['z']);
-	//$start = $_POST['start'];
-	//$end = $_POST['end'];
-	// DUPLICATE DATA CHECKS FOR PARTY
-	// FORM DATA ERROR HANDLING
-	if($title == "" || $a == "" || $c == "" || $s == "" || $z == ""){
-		echo "The form submission is missing values.";
+	//get date timestamp
+	$start =  $_POST['start'];
+	$date = DateTime::createFromFormat('m/d/Y g:i a', $start);
+	$fdate = $date->format('Y-m-d H:i:s');
+	
+	// Form data Error Handling
+	if($title == "" || $a == "" || $c == "" || $s == "" || $z == "" || $start == ""){
+		echo "Form is missing information";
         exit();
 	} else {
-		// END FORM DATA ERROR HANDLING
 		// Begin Insertion of data into the database
-		//$sql = "INSERT INTO parties (title, address, city, state, zipcode, startdate, enddate, datecreated, datemodified) VALUES('$title', $a','$c','$s','$z','$start','$end',now(),now())";
-		$sql = "INSERT INTO parties (title, address, city, state, zipcode, datecreated, datemodified) VALUES('$title', '$a','$c','$s','$z',now(),now())";
+		$sql = "INSERT INTO parties (title, address, city, state, zipcode, start, datecreated, datemodified) VALUES('$title', '$a','$c','$s','$z', '$fdate',now(),now())";
 		$query = mysqli_query($db_conx, $sql); 
 		if ($query === TRUE){
 			echo "party_added";
 		} else{
-			echo "insertion unsuccessful.";
+			echo "Insertion Error.";
 		}
 		exit();
 	}
@@ -35,15 +35,10 @@ if(isset($_POST["a"])){
 <!DOCTYPE html>
 <head>
 <title>Advertise</title>
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-	<!-- Optional theme -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-	<!-- Latest compiled and minified JavaScript -->
-	<<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-	<script src="js/main.js"></script>
-	<script src="js/ajax.js"></script>
-	<script>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
+
+<script>
 	function emptyElement(x){
 		_(x).innerHTML = "";
 	}
@@ -53,10 +48,9 @@ if(isset($_POST["a"])){
 		var c = _("city").value;
 		var s = _("state").value;
 		var z = _("zipcode").value;
-		//var start = _("start").value;
-		//var end = _("end").value;
+		var start = _("start").value;
 		var status = _("status");
-		if(title == "" || a == "" || c == "" || s == "" || z == ""){
+		if(title == "" || a == "" || c == "" || s == "" || z == "" || start == ""){
 			status.innerHTML = "Fill out all of the form data";
 		} else {
 			_("addpartybtn").style.display = "none";
@@ -70,70 +64,67 @@ if(isset($_POST["a"])){
 					} else {
 						window.scrollTo(0,0);
 						_("addpartyform").innerHTML = "OK, You have successfully posted a new party. </br>Party information is as follows:</br>Title: "+title+
-						"</br>Address: "+a+"</br>City: "+c+"</br>State: "+s+"</br>Zip Code: "+z+
-						"</br>Click here to advertise another: <a href='http://babbage.cs.missouri.edu/~lem346/PartyFinder/advertise.php'>Advertise</a>";
+						"</br>Address: "+a+"</br>City: "+c+"</br>State: "+s+"</br>Zip Code: "+z+ "</br>Start Time: "+start+
+						"</br>Click here to view list of parties: <a href='http://babbage.cs.missouri.edu/~lem346/PartyFinder/find.php'>View List</a>";
 					}
 				}
 			}
-			ajax.send("title="+title+"&a="+a+"&c="+c+"&s="+s+"&z="+z);
+			ajax.send("title="+title+"&a="+a+"&c="+c+"&s="+s+"&z="+z+"&start="+start);
 		}
 	}
-	</script>
+</script>
 	
 </head>
 <body>
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-
     <?php include_once("template_navbar.php"); ?>
-
 <br/>
 <br/>
 <div class="container">
 	<div class="jumbotron">
 		<h1>Where's the Party At?!</h1>
 		<form role="form" id="addpartyform" onsubmit="return false">
-			<div class="form-group">
+			<div class="row"><div class="col-xs-5"><div class="form-group">
 				<label >Event Title</label>
 				<input type="text" class="form-control" id="title" placeholder="Enter a title for the event" onfocus="emptyElement('status')">
-			</div>
-		  <div class="form-group">
-			<label >Street Address</label>
-			<input type="text" class="form-control" id="address" placeholder="Enter street address" onfocus="emptyElement('status')">
-		  </div>
-		  <div class="form-group">
-			<label>City</label>
-			<input type="text" class="form-control" id="city" placeholder="Enter City" onfocus="emptyElement('status')">
-		  </div>
-		  <div class="form-group">
-			<label>State</label>
-			<input type="text" class="form-control" id="state" placeholder="Enter State" onfocus="emptyElement('status')">
-		  </div>
-		  <div class="form-group">
-			<label>Zip Code</label>
-			<input type="text" class="form-control" id="zipcode" placeholder="Enter Zip Code" onfocus="emptyElement('status')">
-		  </div>
-<!--
-			<div class="form-group">
-			<label>Start</label>
-				<div class='input-group date'>
-					<input type='text' class="form-control" id="start" onfocus="emptyElement('status')"/> 
-					<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+			</div></div></div>
+			<div class="row"><div class="col-xs-4"><div class="form-group">
+				<label >Street Address</label>
+				<input type="text" class="form-control" id="address" placeholder="Enter street address" onfocus="emptyElement('status')">
+			</div></div></div>
+			<div class="row"><div class="col-xs-4"><div class="form-group">
+				<label>City</label>
+				<input type="text" class="form-control" id="city" placeholder="Enter City" onfocus="emptyElement('status')">
+			</div></div></div>
+			<div class="row"><div class="col-xs-3"><div class="form-group">
+				<label>State</label>
+				<input type="text" class="form-control" id="state" placeholder="Enter State" onfocus="emptyElement('status')">
+			</div></div></div>
+			<div class="row"><div class="col-xs-3"><div class="form-group">
+				<label>Zip Code</label>
+				<input type="text" class="form-control" id="zipcode" placeholder="Enter Zip Code" onfocus="emptyElement('status')">
+			</div></div></div>
+			<div class="row"><div class="col-xs-3"><div class="form-group">
+				<label>Start Time</label>
+				<div class="input-group date" id="datetimepicker1">
+					<input type="text" class="form-control" id="start" readonly>
+					<span class="input-group-addon"><span class="glyphicon-calendar glyphicon"></span></span>
 				</div>
-			</div>
-			<div class="form-group">
-			<label>End</label>
-				<div class='input-group date'>
-					<input type='text' class="form-control"  id="end" onfocus="emptyElement('status')"/>
-					<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-				</div>
-			</div>
--->
-				<button id="addpartybtn" class="btn btn-default" onclick="addParty()">Create Party</button>
-		   <p id="status"></p>
+			</div></div></div>
+			<button id="addpartybtn" class="btn btn-default" onclick="addParty()">Create Party</button>
+			<p id="status"></p>
 		</form>
 	</div>
 </div>
+
+<!-- Javascript Plugins -->
+	<script src="js/main.js"></script>
+	<script src="js/ajax.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/moment.js"></script>
+	<script src="js/bootstrap-datetimepicker.js"></script>
+<!-- Javascript Functions (Order Matters)-->
+	<script>
+		$('#datetimepicker1').datetimepicker();
+	</script>
 </body>
