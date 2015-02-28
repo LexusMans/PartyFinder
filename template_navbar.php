@@ -16,7 +16,7 @@
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			  <ul class="nav navbar-nav">
 				<li><a href="find.php">Find</a></li>
-				<li><a href="advertise.php">Advertise</a></li>
+				<li><a href="promote.php">Promote</a></li>
 				<li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">My Account<span class="caret"></span></a>
 		          <ul class="dropdown-menu" role="menu">

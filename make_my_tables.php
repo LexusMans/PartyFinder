@@ -50,6 +50,10 @@ $tbl_parties = "CREATE TABLE IF NOT EXISTS parties (
 				start DATETIME NOT NULL,
 				datecreated DATETIME NOT NULL,
 				datemodified DATETIME NOT NULL,
+				description TEXT,
+				pong BOOLEAN,
+				jj BOOLEAN,
+				dj BOOLEAN,
                 PRIMARY KEY (id)
                 )"; 
 $query = mysqli_query($db_conx, $tbl_parties); 

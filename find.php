@@ -5,6 +5,7 @@
 	</style>
 
   <head>
+	<title>Find</title>
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
  </head>
@@ -18,9 +19,9 @@
 	</br>
 	<div class = 'container'>
 		<div class='jumbotron'>
-		<h1>Local Parties in Your Area!</h1>
-		<p>Below is a list of local of parties, or click the button below to advertise a party.</p>
-		<p><a class='btn btn-success btn-lg' href='advertise.php' role='button'>Advertise A Party</a></p>
+		<h1>What's the move for tonight?</h1>
+		<p>Below is a list of local of parties, or click the button below to promote a party.</p>
+		<p><a class='btn btn-success btn-lg' href='promote.php' role='button'>Promote A Party</a></p>
 	</div>
 
 <?php	
@@ -31,10 +32,18 @@
 			//change format of date
 			$myDateTime = DateTime::createFromFormat('Y-m-d G:i:s', $row["start"]);
 			$newDateString = $myDateTime->format('l, F jS, Y g:i a');
+			//get party id
+			$pid = $row["id"];
+			
 			//display results in jumbotrons
 			echo
 			"<div class='jumbotron'>
-				<label>" .$row["title"]. "</label></br>Address: " .$row["address"]. "</br>".$row["city"]. ", " .$row["state"]. " " .$row["zipcode"]. "</br>Start Time: ".$newDateString."</div>"; 
+				<label>" .$row["title"]. "</label></br>Address: " .$row["address"]. "</br>".$row["city"]. ", " .$row["state"]. " " .$row["zipcode"]. "</br>Start Time: ".$newDateString."</br>
+				<form action='partyinfo.php' method='POST'>
+                        <input type='hidden' name='pid' value='$pid'/>
+                        <input type='submit' name='submit' value='Details'/>
+                </form>
+			</div>"; 
 		}
 		//free result set
 		mysqli_free_result($result);
