@@ -2,7 +2,7 @@
 if(isset($_POST['title']) || isset($_POST['a']) || isset($_POST['c'])){
 
 	// CONNECT TO THE DATABASE
-	include_once("php_includes/db_conx.php");
+	//include_once("php_includes/db_conx.php");
 	// GATHER THE POSTED DATA INTO LOCAL VARIABLES
 	$title = preg_replace('#[^a-z0-9 ]#i', '', $_POST['title']);
 	$a = preg_replace('#[^a-z0-9, ]#i', '', $_POST['a']);
@@ -14,25 +14,65 @@ if(isset($_POST['title']) || isset($_POST['a']) || isset($_POST['c'])){
 	$start =  $_POST['start'];
 	$date = DateTime::createFromFormat('m/d/Y g:i a', $start);
 	$fdate = $date->format('Y-m-d H:i:s');
+	
 	$pong = $_POST['pong'];
 	$jj = $_POST['jj'];
 	$dj = $_POST['dj'];
-	
+	$p = 0;
+	$p = 0;
+	$p = 0;
+	if ($pong == true)
+		$p = 1;
+	if ($jj == true)
+		$j = 1;
+	if ($dj == true)
+		$d = 1;
 	// Form data Error Handling
 	if($title == "" || $a == "" || $c == "" || $s == "" || $z == "" || $start == ""){
 		echo "Form is missing information";
         exit();
-	} else {
-		// Begin Insertion of data into the database
-		$sql = "INSERT INTO parties (title, address, city, state, zipcode, start, datecreated, datemodified, description, pong, jj, dj) VALUES ('$title', '$a','$c','$s','$z', '$fdate',now(),now(),'$desc', $pong, $jj, $dj)";
-		$query = mysqli_query($db_conx, $sql); 
-		if ($query == TRUE){
-			echo "party_added";
-		} else{
-			echo "Insertion Error.";
-		}
-		exit();
 	}
+	else {
+		// Begin Insertion of data into the database
+		$link = mysqli_connect("dbhost-mysql.cs.missouri.edu", "lem346", "9ErVF9vM", "lem346");
+
+		/* check connection */
+		if (mysqli_connect_errno()) {
+			printf("Connect failed: %s\n", mysqli_connect_error());
+			exit();
+		}
+		
+		$sql = "INSERT INTO parties (title, address, city, state, zipcode, start, datecreated, datemodified, description, pong, jj, dj) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+		
+		/* create a prepared statement */
+		if ($stmt = mysqli_prepare($link, $sql)) {
+			
+			$timenum = time();
+			$timestamp = date('Y-m-d H:i:s', $timenum);
+			
+			/* bind parameters for markers */
+			mysqli_stmt_bind_param($stmt, "sssssssssiii",  $title, $a, $c, $s, $z, $fdate, $timestamp, $timestamp, $desc, $p, $j, $d);
+
+			/* execute query */
+			//mysqli_stmt_execute($stmt);
+			
+			if(!mysqli_stmt_execute($stmt)){
+				echo "Execute failed: (" . mysqli_stmt_errno($stmt) . ") " . mysqli_stmt_error($stmt);
+				exit();
+			}
+
+			/* close statement */
+			mysqli_stmt_close($stmt);
+			
+			echo "party_added";
+			exit();
+		}
+		else{
+			echo "Failed to prepare SQL statement.";
+			exit();
+		}
+	}
+	echo "Just failed.";
 	exit();
 }
 ?>
@@ -59,9 +99,6 @@ if(isset($_POST['title']) || isset($_POST['a']) || isset($_POST['c'])){
 		var jj = _("jj").checked;
 		var dj = _("dj").checked;
 		
-		//status.innerHTML = "Pong: "+pong+". JJ: "+jj+". DJ: "+dj+".";
-		//return;
-		
 		if(title == "" || a == "" || c == "" || s == "" || z == "" || start == ""){
 			status.innerHTML = "Fill out all of the form data";
 		} else {
@@ -77,7 +114,6 @@ if(isset($_POST['title']) || isset($_POST['a']) || isset($_POST['c'])){
 						window.scrollTo(0,0);
 						_("addpartyform").innerHTML = "OK, You have successfully posted a new party. </br>Party information is as follows:</br>Title: "+title+
 						"</br>Address: "+a+"</br>City: "+c+"</br>State: "+s+"</br>Zip Code: "+z+ "</br>Start Time: "+start+"</br>Description: "+desc+
-						"</br>Beer Pong: "+pong+" Jungle Juice: "+jj+" Speakers/DJ: "+dj+
 						"</br>Click here to view list of parties: <a href='http://babbage.cs.missouri.edu/~lem346/PartyFinder/find.php'>View List</a>";
 					}
 				}
