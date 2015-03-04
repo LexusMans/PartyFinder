@@ -50,7 +50,7 @@ $tbl_parties = "CREATE TABLE IF NOT EXISTS parties (
 				start DATETIME NOT NULL,
 				datecreated DATETIME NOT NULL,
 				datemodified DATETIME NOT NULL,
-				description VARCHAR(250),
+				description VARCHAR(2000) NOT NULL,
 				pong BOOLEAN,
 				jj BOOLEAN,
 				dj BOOLEAN,

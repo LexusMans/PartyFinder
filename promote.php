@@ -99,9 +99,13 @@ if(isset($_POST['title']) || isset($_POST['a']) || isset($_POST['c'])){
 		var jj = _("jj").checked;
 		var dj = _("dj").checked;
 		
-		if(title == "" || a == "" || c == "" || s == "" || z == "" || start == ""){
+		if(title == "" || a == "" || c == "" || s == "" || z == "" || start == "" || desc == ""){
 			status.innerHTML = "Fill out all of the form data";
-		} else {
+		}
+		else if(desc.length >= 2001){
+			status.innerHTML = "Description has a 2000 character limit";
+		}
+		else {
 			_("addpartybtn").style.display = "none";
 			status.innerHTML = 'please wait ...';
 			var ajax = ajaxObj("POST", "promote.php");

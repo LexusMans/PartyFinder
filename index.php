@@ -28,7 +28,7 @@
 	<div class="jumbotron">
 		<h1>Welcome to Party Finder!</h1>
 		<p>Find local parties, or promote your own party!</p>
-		<p><a class="btn btn-primary btn-lg" role="button" href="find.php">Search Now!</a></p>
+		<p><a class="btn btn-info btn-lg" role="button" href="find.php">Search Now!</a></p>
 	</div>
 </div>
 
